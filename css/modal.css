@@ -1,0 +1,33 @@
+.main-outer{
+  height: 288px;
+  width: 380px;
+}
+.text{
+  color: white;
+  font-family: 'Cabin', sans-serif;
+  font-size: 18;
+}
+a{
+  color: #63C132;
+}
+a:hover {
+    color: #AAEFDF;
+}
+.center{
+  margin: auto;
+  text-align: center;
+}
+.image{
+  height: 300px;
+  z-index: -1;
+  position: absolute;
+}
+.bottom{
+  bottom:10;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.header{
+  padding-top: 10px;
+}
