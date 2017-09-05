@@ -39,7 +39,7 @@ If the wallet is currently running, it will need to be restarted before the chan
 The next step is to install the extension. 
 
 To do this, navigate to `chrome://extensions/` within chrome.
-Download the packed [Chrome Extension](https://github.com/VladimirPewtin/CHANCOIN-TippingExtension/releases/download/0.0.1/CHANCOIN_TippingExtension.crx)
+Download the packed [Chrome Extension](https://github.com/VladimirPewtin/CHANCOIN-TippingExtension/releases/download/0.0.2/CHANCOIN_TippingExtension.crx)
 and drag the downloaded file into the chrome extensions window. After accepting the permissions, the extension will be installed and ready to go.
 ___
 
