@@ -192,7 +192,8 @@ function getPostAddress() {
  * @return {string} postAddress
  */
 function getPostAddressX(){
-	return postNum = document.getElementById("menu").parentNode.parentNode.getElementsByClassName("name")[0].innerText;
+	postNum = document.getElementById("menu").parentNode.parentNode.children[0].name;
+	return document.getElementById("menu").parentNode.parentNode.getElementsByClassName("name")[0].innerText;
 }
 
 /**
