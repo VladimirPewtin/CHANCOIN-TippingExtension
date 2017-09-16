@@ -21,7 +21,12 @@ chrome.extension.sendMessage({}, function(response) {
  * @return void
  */
 function addButton() {
-    if(getPostAddress().toLowerCase().startsWith("$4chn:")) {
+    // TODO Refactor this into a predicate
+    if( getPostAddress().toLowerCase().startsWith("$4chn:") ||
+        getPostAddress().toLowerCase().startsWith("$4CHN:") ||
+        getPostAddress().toLowerCase().startsWith("$CHAN:") ||
+        getPostAddress().toLowerCase().startsWith("$chan:") ) {
+
         var a = document.getElementById("post-menu").children[0];
         var b = document.createElement("li");
         b.innerHTML = "<img src='http://i.imgur.com/sh8aYT1.png' style='width:15px;vertical-align:middle'/>  Tip poster";
