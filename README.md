@@ -1,7 +1,7 @@
 # CHANCOIN: Tipping Extension
 A ChanCoin Chrome browser extension for 4chan
 ## General Information
-This extension adds a tip button to 4chan posts with the following name format: `<PREFIX>:address` where <PREFIX> is one of:
+This extension adds a tip button to 4chan posts with the following name format: `<PREFIX>:address` where `<PREFIX>` is one of:
 * `$4chn`
 * `4CHN`
 * `$CHAN`
