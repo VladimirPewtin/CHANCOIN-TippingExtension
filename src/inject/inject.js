@@ -314,9 +314,8 @@ function checkForCSS_Class (node, className) {
           addButton(getPostAddress());
           break;
         case "reply-to-thread":
-          // adding the wallet address to the name field
-          //TODO split this into two functions. One to get the address, and another that sets the name.
-          getAddressFromWallet();
+          // adding the wallet address to the name field with 4chanX
+          setNameUsingAddress(getAddressFromWallet());
           break;
       }
     }
