@@ -1,4 +1,4 @@
-chrome.extension.sendMessage({}, function(response) {
+window.onload = function() {
   var readyStateCheckInterval = setInterval(function() {
     if (document.readyState === "complete") {
       clearInterval(readyStateCheckInterval);
@@ -13,44 +13,44 @@ chrome.extension.sendMessage({}, function(response) {
       myObserver.observe (document, obsConfig);
     }
   }, 10);
-});
+};
 
-function test(){
-$.ajax({
-	type: "POST",
-	url: "http://username:password@127.0.0.1:43814",
-	data: '{"method": "listreceivedbyaddress", "params":[0,true]}',
-	dataType: "json",
-	contentType: "application/json-rpc;",
-	success: function(response) {
-		//use a timeout so the loader has a chance to fire
-		console.log(response);
-		console.log(response.result[0].address);
-		var tmp = document.getElementById("qr").children[1].children[0].children[2];
-		tmp.value = "$4CHN:" + response.result[0].address;
-	},
-	error: function(xhr, textStatus, errorThrown) {
-		console.log(xhr);
-	}
-});
+/**
+ * Makes a post request to the wallet to get one of the users wallet addresses
+ * @return {string} wallet address
+ */
+function getAddressFromWallet(){
+  $.ajax({
+  	type: "POST",
+  	url: "http://username:password@127.0.0.1:43814",
+  	data: '{"method": "listreceivedbyaddress", "params":[0,true]}',
+  	dataType: "json",
+  	contentType: "application/json-rpc;",
+  	success: function(response) {
+      return response.result[0].address;
+  	},
+  	error: function(xhr, textStatus, errorThrown) {
+  		console.log("Error getting address from wallet. Is your wallet on and setup?");
+  	}
+  });
 }
 
-function test2(){
-$.ajax({
-  type: "POST",
-  url: "http://username:password@127.0.0.1:43814",
-  data: '{"method": "listreceivedbyaddress", "params":["0","True"]}',
-  dataType: "json",
-  contentType: "application/json-rpc;",
-  success: function(response) {
-    //use a timeout so the loader has a chance to fire
-    console.log(response);
-  },
-  error: function(xhr, textStatus, errorThrown) {
-    console.log(xhr);
-  }
-});
+/**
+ * Sets the name field with the passed in wallet address. This method adds the "$4CHN:" prefix
+ * @param {string} addressToSet
+ * @return void
+ */
+function setNameUsingAddress(addressToSet){
+  var tmp = document.getElementById("qr").children[1].children[0].children[2];
+  tmp.value = "$4CHN:" + addressToSet;
+}
 
+/**
+ * TODO: Finish function
+ * Generates and gets a new address from the users wallet.
+ * @return {string} new wallet address
+ */
+function test2(){
 $.ajax({
   type: "POST",
   url: "http://username:password@127.0.0.1:43814",
@@ -295,20 +295,6 @@ function mutationHandler (mutationRecords) {
 }
 
 /**
- * Checks for the CSS class
- * @param {Number} a
- * @param {Number} b
- * @return {Number} sum
- */
-function checkForCSS_ClassName (node, className) {
-    if (node.nodeType === 1) {
-        if (node.classList.contains (className) ) {
-					test();
-        }
-    }
-}
-
-/**
  * Checks the passed in node for the passed in CSS class name.
  * Depending on the class name, different actions will be carried out.
  * @param {node} node to check
@@ -329,7 +315,8 @@ function checkForCSS_Class (node, className) {
           break;
         case "reply-to-thread":
           // adding the wallet address to the name field
-          test();
+          //TODO split this into two functions. One to get the address, and another that sets the name.
+          getAddressFromWallet();
           break;
       }
     }
