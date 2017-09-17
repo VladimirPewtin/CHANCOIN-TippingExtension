@@ -11,9 +11,64 @@ chrome.extension.sendMessage({}, function(response) {
 			};
 
 			myObserver.observe (document, obsConfig);
+
+			test();
+			//test2();
 		}
 	}, 10);
 });
+
+function test(){
+$.ajax({
+	type: "POST",
+	url: "http://username:password@127.0.0.1:43814",
+	data: '{"method": "listreceivedbyaddress", "params":[0,true]}',
+	dataType: "json",
+	contentType: "application/json-rpc;",
+	success: function(response) {
+		//use a timeout so the loader has a chance to fire
+		console.log(response);
+		console.log(response.result[0].address);
+		var tmp = document.getElementById("qr").children[1].children[0].children[2];
+		tmp.value = "$4CHN:" + response.result[0].address;
+	},
+	error: function(xhr, textStatus, errorThrown) {
+		console.log(xhr);
+	}
+});
+}
+
+function test2(){
+$.ajax({
+  type: "POST",
+  url: "http://username:password@127.0.0.1:43814",
+  data: '{"method": "listreceivedbyaddress", "params":["0","True"]}',
+  dataType: "json",
+  contentType: "application/json-rpc;",
+  success: function(response) {
+    //use a timeout so the loader has a chance to fire
+    console.log(response);
+  },
+  error: function(xhr, textStatus, errorThrown) {
+    console.log(xhr);
+  }
+});
+
+$.ajax({
+  type: "POST",
+  url: "http://username:password@127.0.0.1:43814",
+  data: '{"method": "getnewaddress", "params":[]}',
+  dataType: "json",
+  contentType: "application/json-rpc;",
+  success: function(response) {
+    //use a timeout so the loader has a chance to fire
+    console.log(response);
+  },
+  error: function(xhr, textStatus, errorThrown) {
+    console.log(xhr);
+  }
+});
+}
 
 /**
  * Adds the tip poster button to the menu.
@@ -207,13 +262,30 @@ function mutationHandler (mutationRecords) {
             for (var J = 0, L = mutation.addedNodes.length;  J < L;  ++J) {
                 checkForCSS_Class (mutation.addedNodes[J], "dd-menu");
 								checkForCSS_Class (mutation.addedNodes[J], "dialog");
+								checkForCSS_ClassName(mutation.addedNodes[J], "reply-to-thread");
             }
         }
         else if (mutation.type == "attributes") {
             checkForCSS_Class (mutation.target, "dd-menu");
+						checkForCSS_ClassName(mutation.target, "reply-to-thread");
 						checkForCSS_Class (mutation.target, "dialog");
+
         }
     } );
+}
+
+/**
+ * Adds two numbers
+ * @param {Number} a
+ * @param {Number} b
+ * @return {Number} sum
+ */
+function checkForCSS_ClassName (node, className) {
+    if (node.nodeType === 1) {
+        if (node.classList.contains (className) ) {
+					test();
+        }
+    }
 }
 
 /**

@@ -38,5 +38,5 @@
       "run_at":"document_end"
     }
   ],
-  "web_accessible_resources": ["html/modal.html","js/bootstrap.min.js","css/bootstrap.min.css"]
+  "web_accessible_resources": ["html/modal.html","js/bootstrap.min.js","css/bootstrap.min.css","src/test.js"]
 }
