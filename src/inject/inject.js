@@ -72,12 +72,13 @@ $.ajax({
  * Specific for vanilla 4chan compatibility
  * @return void
  */
-function addButton() {
+function addButton(postAddress) {
+  postAddress = postAddress.toLowerCase();
   // TODO Refactor this into a predicate
-  if( getPostAddress().toLowerCase().startsWith("$4chn:") ||
-      getPostAddress().toLowerCase().startsWith("$4CHN:") ||
-      getPostAddress().toLowerCase().startsWith("$CHAN:") ||
-      getPostAddress().toLowerCase().startsWith("$chan:") ) {
+  if( postAddress.startsWith("$4chn:") ||
+      postAddress.startsWith("$4CHN:") ||
+      postAddress.startsWith("$CHAN:") ||
+      postAddress.startsWith("$chan:") ) {
 
     var a = document.getElementById("post-menu").children[0];
     var b = document.createElement("li");
@@ -92,12 +93,13 @@ function addButton() {
  * Specific for 4chanX compatibility
  * @return void
  */
-function addButtonX() {
+function addButtonX(postAddress) {
+  postAddress = postAddress.toLowerCase();
   // TODO Refactor this into a predicate (and de-dupe it if possible)
-  if( getPostAddressX().toLowerCase().startsWith("$4chn:") ||
-      getPostAddressX().toLowerCase().startsWith("$4CHN:") ||
-      getPostAddressX().toLowerCase().startsWith("$CHAN:") ||
-      getPostAddressX().toLowerCase().startsWith("$chan:") ) {
+  if( postAddress.startsWith("$4chn:") ||
+      postAddress.startsWith("$4CHN:") ||
+      postAddress.startsWith("$CHAN:") ||
+      postAddress.startsWith("$chan:") ) {
     if(document.getElementById("tipPoster") === null) {
 
       var a = document.getElementById("menu");
@@ -179,7 +181,7 @@ function addressFromPostName(postName) {
  */
 function send4CHN(address, amount) {
   var postAddress = getPostAddress();
-  if(postAddress === null){
+  if(postAddress === ""){
     postAddress = getPostAddressX();
   }
 
@@ -252,10 +254,7 @@ function getPostAddress() {
     postNum = document.getElementById("post-menu").children[0].children[0].getAttribute("data-id");
     return document.getElementById("pc" + document.getElementById("post-menu").children[0].children[0].getAttribute("data-id")).getElementsByClassName("name")[1].innerText;
   } catch(e) {
-    if (e instanceof TypeError) {
-      // statements to handle TypeError exceptions
-      return null;
-    }
+    return "";
   }
 }
 
@@ -265,8 +264,12 @@ function getPostAddress() {
  * @return {string} postAddress
  */
 function getPostAddressX(){
-  postNum = document.getElementById("menu").parentNode.parentNode.children[0].name;
-  return document.getElementById("menu").parentNode.parentNode.getElementsByClassName("name")[0].innerText;
+  try {
+    postNum = document.getElementById("menu").parentNode.parentNode.children[0].name;
+    return document.getElementById("menu").parentNode.parentNode.getElementsByClassName("name")[0].innerText;
+  } catch(e) {
+    return "";
+  }
 }
 
 /**
@@ -280,12 +283,12 @@ function mutationHandler (mutationRecords) {
       for (var J = 0, L = mutation.addedNodes.length;  J < L;  ++J) {
         checkForCSS_Class (mutation.addedNodes[J], "dd-menu");
         checkForCSS_Class (mutation.addedNodes[J], "dialog");
-        checkForCSS_ClassName(mutation.addedNodes[J], "reply-to-thread");
+        checkForCSS_Class (mutation.addedNodes[J], "reply-to-thread");
       }
     }
     else if (mutation.type == "attributes") {
       checkForCSS_Class (mutation.target, "dd-menu");
-      checkForCSS_ClassName(mutation.target, "reply-to-thread");
+      checkForCSS_Class (mutation.target, "reply-to-thread");
       checkForCSS_Class (mutation.target, "dialog");
     }
   });
@@ -318,11 +321,11 @@ function checkForCSS_Class (node, className) {
       switch (className) {
         case "dialog":
           // Adding a button with 4ChanX
-          addButtonX();
+          addButtonX(getPostAddressX());
           break;
         case "dd-menu":
           // adding a button with vanilla 4chan
-          addButton();
+          addButton(getPostAddress());
           break;
         case "reply-to-thread":
           // adding the wallet address to the name field
