@@ -1,21 +1,18 @@
 chrome.extension.sendMessage({}, function(response) {
-	var readyStateCheckInterval = setInterval(function() {
-		if (document.readyState === "complete") {
-			clearInterval(readyStateCheckInterval);
+  var readyStateCheckInterval = setInterval(function() {
+    if (document.readyState === "complete") {
+      clearInterval(readyStateCheckInterval);
 
-			var mutationObserver = window.MutationObserver;
-			var myObserver       = new mutationObserver (mutationHandler);
-			var obsConfig        = {
-			    childList: true, attributes: true,
-			    subtree: true,   attributeFilter: ['class']
-			};
+      var mutationObserver = window.MutationObserver;
+      var myObserver       = new mutationObserver (mutationHandler);
+      var obsConfig        = {
+        childList: true, attributes: true,
+        subtree: true,   attributeFilter: ['class']
+      };
 
-			myObserver.observe (document, obsConfig);
-
-			test();
-			//test2();
-		}
-	}, 10);
+      myObserver.observe (document, obsConfig);
+    }
+  }, 10);
 });
 
 function test(){
@@ -76,13 +73,18 @@ $.ajax({
  * @return void
  */
 function addButton() {
-    if(getPostAddress().toLowerCase().startsWith("$4chn:")) {
-        var a = document.getElementById("post-menu").children[0];
-        var b = document.createElement("li");
-        b.innerHTML = "<img src='http://i.imgur.com/sh8aYT1.png' style='width:15px;vertical-align:middle'/>  Tip poster";
-        b.addEventListener("click", send4CHN);
-        a.appendChild(b);
-    }
+  // TODO Refactor this into a predicate
+  if( getPostAddress().toLowerCase().startsWith("$4chn:") ||
+      getPostAddress().toLowerCase().startsWith("$4CHN:") ||
+      getPostAddress().toLowerCase().startsWith("$CHAN:") ||
+      getPostAddress().toLowerCase().startsWith("$chan:") ) {
+
+    var a = document.getElementById("post-menu").children[0];
+    var b = document.createElement("li");
+    b.innerHTML = "<img src='http://i.imgur.com/sh8aYT1.png' style='width:15px;vertical-align:middle'/>  Tip poster";
+    b.addEventListener("click", send4CHN);
+    a.appendChild(b);
+  }
 }
 
 /**
@@ -91,21 +93,25 @@ function addButton() {
  * @return void
  */
 function addButtonX() {
-    if(getPostAddressX().toLowerCase().startsWith("$4chn:")) {
-			if(document.getElementById("tipPoster") === null) {
+  // TODO Refactor this into a predicate (and de-dupe it if possible)
+  if( getPostAddressX().toLowerCase().startsWith("$4chn:") ||
+      getPostAddressX().toLowerCase().startsWith("$4CHN:") ||
+      getPostAddressX().toLowerCase().startsWith("$CHAN:") ||
+      getPostAddressX().toLowerCase().startsWith("$chan:") ) {
+    if(document.getElementById("tipPoster") === null) {
 
-				var a = document.getElementById("menu");
-        var b = document.createElement("a");
-				b.id = "tipPoster";
-				b.className += ' entry';
-				b.click = "send4CHN()";
-				b.onmouseout  = removeFocus;
-				b.onmouseover = addFocus;
-        b.innerHTML = "<img src='http://i.imgur.com/sh8aYT1.png' style='width:15px;vertical-align:middle' />  Tip poster";
-        b.addEventListener("click", send4CHN);
-        a.appendChild(b);
-			}
+      var a = document.getElementById("menu");
+      var b = document.createElement("a");
+      b.id = "tipPoster";
+      b.className += ' entry';
+      b.click = "send4CHN()";
+      b.onmouseout  = removeFocus;
+      b.onmouseover = addFocus;
+      b.innerHTML = "<img src='http://i.imgur.com/sh8aYT1.png' style='width:15px;vertical-align:middle' />  Tip poster";
+      b.addEventListener("click", send4CHN);
+      a.appendChild(b);
     }
+  }
 }
 
 /**
@@ -113,13 +119,13 @@ function addButtonX() {
  * @return void
  */
 function clearFocusedClassFromMenu(){
-	var childNodes = document.getElementById("menu").children;
+  var childNodes = document.getElementById("menu").children;
 
-	for (var J = 0, L = childNodes.length;  J < L;  ++J) {
-		if(childNodes[J].className.includes("focused")){
-			setFocus(childNodes[J], false);
-		}
-	}
+  for (var J = 0, L = childNodes.length;  J < L;  ++J) {
+    if(childNodes[J].className.includes("focused")){
+      setFocus(childNodes[J], false);
+    }
+  }
 }
 
 /**
@@ -127,8 +133,8 @@ function clearFocusedClassFromMenu(){
  * @return void
  */
 function addFocus(){
-	clearFocusedClassFromMenu();
-	setFocus(document.getElementById("tipPoster"), true);
+  clearFocusedClassFromMenu();
+  setFocus(document.getElementById("tipPoster"), true);
 }
 
 /**
@@ -136,7 +142,7 @@ function addFocus(){
  * @return void
  */
 function removeFocus(){
-	setFocus(document.getElementById("tipPoster"), false);
+  setFocus(document.getElementById("tipPoster"), false);
 }
 
 /**
@@ -146,11 +152,22 @@ function removeFocus(){
  * @return {Number} sum
  */
 function setFocus(element, isFocus){
-	if(isFocus){
-		element.className += " focused";
-	} else{
-		element.className = element.className.replace(" focused", "");
-	}
+  if(isFocus){
+    element.className += " focused";
+  } else{
+    element.className = element.className.replace(" focused", "");
+  }
+}
+
+
+/**
+ * Returns the address, which should be the portion of the post name following
+ * the colon.
+ * @param {string} postName
+ * @return {string} address
+ */
+function addressFromPostName(postName) {
+  return postName.split(':')[1];
 }
 
 /**
@@ -161,67 +178,68 @@ function setFocus(element, isFocus){
  * @return {Number} sum
  */
 function send4CHN(address, amount) {
-var postAddress = getPostAddress();
-if(postAddress === null){
-	postAddress = getPostAddressX();
-}
-address = postAddress.replace(/\s+/g, '').replace(/\$4chn:/gi, '');
+  var postAddress = getPostAddress();
+  if(postAddress === null){
+    postAddress = getPostAddressX();
+  }
 
-	swal({
-		title: "Tip a poster",
-		text: "How much 4CHN would you like to send to " + address + "?",
-		type: "input",
-		showCancelButton: true,
-		closeOnConfirm: false,
-		animation: "slide-from-top",
-		inputPlaceholder: "Number of coins",
-		showLoaderOnConfirm: true,
-		},
-		function(inputValue){
+  address = addressFromPostName(postAddress.replace(/\s+/g, ''));
 
-			//did user cancel
-			if(inputValue === false){
-				return;
-			}
+  swal({
+    title: "Tip a poster",
+    text: "How much 4CHN would you like to send to " + address + "?",
+    type: "input",
+    showCancelButton: true,
+    closeOnConfirm: false,
+    animation: "slide-from-top",
+    inputPlaceholder: "Number of coins",
+    showLoaderOnConfirm: true,
+  },
+       function(inputValue){
 
-			if(inputValue==="" || /^\D+$/.test(inputValue)) {
-				//use a timeout so the loader has a chance to fire
-				setTimeout(function(){
-					swal("Error!", "Please enter a number.", "error");
-				}, 500);
-			}
-			else if(parseFloat(inputValue) < 0.00000001) {
-				//use a timeout so the loader has a chance to fire
-				setTimeout(function(){
-					swal("Error!", "Value must be greater than or equal to 0.00000001.", "error");
-				}, 500);
-			}
-			else if(inputValue!==null) {
+         //did user cancel
+         if(inputValue === false){
+           return;
+         }
 
-				$.ajax({
-				  type: "POST",
-					url: "http://username:password@127.0.0.1:43814",
-					data: '{"method": "sendtoaddress", "params":["' + address + '",' + inputValue  + ',"A tip for post #' + postNum + '."]}',
-					dataType: "json",
-					contentType: "application/json-rpc;",
-					success: function(response) {
-						//use a timeout so the loader has a chance to fire
-						setTimeout(function(){
-							if(response.error !== null) {
-									swal("Error!", "There was an error sending the coins", "error");
-							}
-							else {
-									swal("Success!", "You sent " + inputValue + " 4CHN to " + address + ".", "success");
-							}
-						}, 500);
+         if(inputValue==="" || /^\D+$/.test(inputValue)) {
+           //use a timeout so the loader has a chance to fire
+           setTimeout(function(){
+             swal("Error!", "Please enter a number.", "error");
+           }, 500);
+         }
+         else if(parseFloat(inputValue) < 0.00000001) {
+           //use a timeout so the loader has a chance to fire
+           setTimeout(function(){
+             swal("Error!", "Value must be greater than or equal to 0.00000001.", "error");
+           }, 500);
+         }
+         else if(inputValue!==null) {
 
-					},
-					error: function(xhr, textStatus, errorThrown) {
-					 	swal("Error!", "There was an error sending the coins", "error");
-					}
-				});
-			}
-		});
+           $.ajax({
+             type: "POST",
+             url: "http://username:password@127.0.0.1:43814",
+             data: '{"method": "sendtoaddress", "params":["' + address + '",' + inputValue  + ',"A tip for post #' + postNum + '."]}',
+             dataType: "json",
+             contentType: "application/json-rpc;",
+             success: function(response) {
+               //use a timeout so the loader has a chance to fire
+               setTimeout(function(){
+                 if(response.error !== null) {
+                   swal("Error!", "There was an error sending the coins", "error");
+                 }
+                 else {
+                   swal("Success!", "You sent " + inputValue + " 4CHN to " + address + ".", "success");
+                 }
+               }, 500);
+
+             },
+             error: function(xhr, textStatus, errorThrown) {
+               swal("Error!", "There was an error sending the coins", "error");
+             }
+           });
+         }
+       });
 }
 
 /**
@@ -230,15 +248,15 @@ address = postAddress.replace(/\s+/g, '').replace(/\$4chn:/gi, '');
  * @return {string} postAddress
  */
 function getPostAddress() {
-	try {
-			postNum = document.getElementById("post-menu").children[0].children[0].getAttribute("data-id");
-    	return document.getElementById("pc" + document.getElementById("post-menu").children[0].children[0].getAttribute("data-id")).getElementsByClassName("name")[1].innerText;
-	} catch(e) {
-		 if (e instanceof TypeError) {
-        // statements to handle TypeError exceptions
-				return null;
-		}
-	}
+  try {
+    postNum = document.getElementById("post-menu").children[0].children[0].getAttribute("data-id");
+    return document.getElementById("pc" + document.getElementById("post-menu").children[0].children[0].getAttribute("data-id")).getElementsByClassName("name")[1].innerText;
+  } catch(e) {
+    if (e instanceof TypeError) {
+      // statements to handle TypeError exceptions
+      return null;
+    }
+  }
 }
 
 /**
@@ -247,8 +265,8 @@ function getPostAddress() {
  * @return {string} postAddress
  */
 function getPostAddressX(){
-	postNum = document.getElementById("menu").parentNode.parentNode.children[0].name;
-	return document.getElementById("menu").parentNode.parentNode.getElementsByClassName("name")[0].innerText;
+  postNum = document.getElementById("menu").parentNode.parentNode.children[0].name;
+  return document.getElementById("menu").parentNode.parentNode.getElementsByClassName("name")[0].innerText;
 }
 
 /**
@@ -257,25 +275,24 @@ function getPostAddressX(){
  * @return void
  */
 function mutationHandler (mutationRecords) {
-    mutationRecords.forEach ( function (mutation) {
-        if (mutation.type == "childList" && typeof mutation.addedNodes  == "object" && mutation.addedNodes.length) {
-            for (var J = 0, L = mutation.addedNodes.length;  J < L;  ++J) {
-                checkForCSS_Class (mutation.addedNodes[J], "dd-menu");
-								checkForCSS_Class (mutation.addedNodes[J], "dialog");
-								checkForCSS_ClassName(mutation.addedNodes[J], "reply-to-thread");
-            }
-        }
-        else if (mutation.type == "attributes") {
-            checkForCSS_Class (mutation.target, "dd-menu");
-						checkForCSS_ClassName(mutation.target, "reply-to-thread");
-						checkForCSS_Class (mutation.target, "dialog");
-
-        }
-    } );
+  mutationRecords.forEach ( function (mutation) {
+    if (mutation.type == "childList" && typeof mutation.addedNodes  == "object" && mutation.addedNodes.length) {
+      for (var J = 0, L = mutation.addedNodes.length;  J < L;  ++J) {
+        checkForCSS_Class (mutation.addedNodes[J], "dd-menu");
+        checkForCSS_Class (mutation.addedNodes[J], "dialog");
+        checkForCSS_ClassName(mutation.addedNodes[J], "reply-to-thread");
+      }
+    }
+    else if (mutation.type == "attributes") {
+      checkForCSS_Class (mutation.target, "dd-menu");
+      checkForCSS_ClassName(mutation.target, "reply-to-thread");
+      checkForCSS_Class (mutation.target, "dialog");
+    }
+  });
 }
 
 /**
- * Adds two numbers
+ * Checks for the CSS class
  * @param {Number} a
  * @param {Number} b
  * @return {Number} sum
@@ -289,19 +306,29 @@ function checkForCSS_ClassName (node, className) {
 }
 
 /**
- * Adds two numbers
- * @param {Number} a
- * @param {Number} b
- * @return {Number} sum
+ * Checks the passed in node for the passed in CSS class name.
+ * Depending on the class name, different actions will be carried out.
+ * @param {node} node to check
+ * @param {string} class name to check
+ * @return void
  */
 function checkForCSS_Class (node, className) {
-    if (node.nodeType === 1) {
-        if (node.classList.contains (className) ) {
-						if(className === "dialog"){
-							addButtonX();
-						}else{
-							addButton();
-						}
-        }
+  if (node.nodeType === 1) {
+    if (node.classList.contains (className) ) {
+      switch (className) {
+        case "dialog":
+          // Adding a button with 4ChanX
+          addButtonX();
+          break;
+        case "dd-menu":
+          // adding a button with vanilla 4chan
+          addButton();
+          break;
+        case "reply-to-thread":
+          // adding the wallet address to the name field
+          test();
+          break;
+      }
     }
+  }
 }
