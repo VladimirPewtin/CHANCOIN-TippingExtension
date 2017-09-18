@@ -15,24 +15,21 @@ window.onload = function() {
   }, 10);
 };
 
-/**
- * Makes a post request to the wallet to get one of the users wallet addresses
- * @return {string} wallet address
- */
-function getAddressFromWallet(){
-  $.ajax({
-  	type: "POST",
-  	url: "http://username:password@127.0.0.1:43814",
-  	data: '{"method": "listreceivedbyaddress", "params":[0,true]}',
-  	dataType: "json",
-  	contentType: "application/json-rpc;",
-  	success: function(response) {
-      return response.result[0].address;
-  	},
-  	error: function(xhr, textStatus, errorThrown) {
-  		console.log("Error getting address from wallet. Is your wallet on and setup?");
-  	}
-  });
+function getAddressFromLocalStorage(){
+  function setCurrentChoice(result) {
+    if(result !== undefined && result.address !== undefined && result.address !== ""){
+      console.log("Address Found");
+      console.log(result.address);
+      setNameUsingAddress(result.address);
+    }
+    else{
+      console.log("No Address Found");
+      return null;
+    }
+    //console.log(result);
+  }
+
+  chrome.storage.local.get("address",setCurrentChoice);
 }
 
 /**
@@ -43,28 +40,6 @@ function getAddressFromWallet(){
 function setNameUsingAddress(addressToSet){
   var tmp = document.getElementById("qr").children[1].children[0].children[2];
   tmp.value = "$4CHN:" + addressToSet;
-}
-
-/**
- * TODO: Finish function
- * Generates and gets a new address from the users wallet.
- * @return {string} new wallet address
- */
-function test2(){
-$.ajax({
-  type: "POST",
-  url: "http://username:password@127.0.0.1:43814",
-  data: '{"method": "getnewaddress", "params":[]}',
-  dataType: "json",
-  contentType: "application/json-rpc;",
-  success: function(response) {
-    //use a timeout so the loader has a chance to fire
-    console.log(response);
-  },
-  error: function(xhr, textStatus, errorThrown) {
-    console.log(xhr);
-  }
-});
 }
 
 /**
@@ -315,7 +290,7 @@ function checkForCSS_Class (node, className) {
           break;
         case "reply-to-thread":
           // adding the wallet address to the name field with 4chanX
-          setNameUsingAddress(getAddressFromWallet());
+          getAddressFromLocalStorage();
           break;
       }
     }
