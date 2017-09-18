@@ -11,20 +11,29 @@ window.onload = function() {
       };
 
       myObserver.observe (document, obsConfig);
+
+      //Set the classic original form name now as its already loaded in the DOM
+      setAddressFromLocalStorageIfChecked(fourChanVanilla);
     }
   }, 10);
 };
 
-function getAddressFromLocalStorageIfChecked(){
+var fourChanVanillaQR = 0;
+var fourChanXQR = 1;
+var fourChanVanilla = 2;
+
+/**
+ * Sets the name field with the passed in wallet address. This method adds the "$4CHN:" prefix
+ * @param {int} mode determines where the method should look for the name field
+ */
+function setAddressFromLocalStorageIfChecked(mode){
 
   chrome.storage.local.get("insert",function(result){
     if(result !== undefined && result.insert){
       //get the address from the storage
       chrome.storage.local.get("address",function(result){
         if(result !== undefined && result.address !== undefined && result.address !== ""){
-          console.log("Address Found");
-          console.log(result.address);
-          setNameUsingAddress(result.address);
+          setNameUsingAddress(result.address, mode);
         }
         else{
           console.log("No Address Found");
@@ -32,8 +41,7 @@ function getAddressFromLocalStorageIfChecked(){
         }
       });
     }
-    else{
-      console.log("No settings Found");
+    else {
       return null;
     }
   });
@@ -42,12 +50,22 @@ function getAddressFromLocalStorageIfChecked(){
 
 /**
  * Sets the name field with the passed in wallet address. This method adds the "$4CHN:" prefix
- * @param {string} addressToSet
+ * @param {string} addressToSet address that will be used
+ * @param {string} mode determines where the method should look for the name field
  * @return void
  */
-function setNameUsingAddress(addressToSet){
-  var tmp = document.getElementById("qr").children[1].children[0].children[2];
-  tmp.value = "$4CHN:" + addressToSet;
+function setNameUsingAddress(addressToSet, mode){
+  var formattedAddress = "$4CHN:" + addressToSet;
+  var tmp;
+
+  if(mode === fourChanXQR) {
+    tmp = document.getElementById("qr").children[1].children[0].children[2];
+  } else if(mode === fourChanVanillaQR){
+    tmp = document.getElementById("qrForm").children[0].children[0];
+  } else if(mode === fourChanVanilla){
+    tmp = document.getElementById("postForm").children[0].children[0].children[1].children[0];
+  }
+  tmp.value = formattedAddress;
 }
 
 /**
@@ -267,12 +285,15 @@ function mutationHandler (mutationRecords) {
         checkForCSS_Class (mutation.addedNodes[J], "dd-menu");
         checkForCSS_Class (mutation.addedNodes[J], "dialog");
         checkForCSS_Class (mutation.addedNodes[J], "reply-to-thread");
+        checkForCSS_Class (mutation.addedNodes[J], "reply");
       }
     }
     else if (mutation.type == "attributes") {
       checkForCSS_Class (mutation.target, "dd-menu");
       checkForCSS_Class (mutation.target, "reply-to-thread");
       checkForCSS_Class (mutation.target, "dialog");
+      checkForCSS_Class (mutation.target, "reply");
+
     }
   });
 }
@@ -298,7 +319,11 @@ function checkForCSS_Class (node, className) {
           break;
         case "reply-to-thread":
           // adding the wallet address to the name field with 4chanX
-          getAddressFromLocalStorageIfChecked();
+          setAddressFromLocalStorageIfChecked(fourChanXQR);
+          break;
+        case "reply":
+          // adding the wallet address to the name field with vanilla 4chan
+          setAddressFromLocalStorageIfChecked(fourChanVanillaQR);
           break;
       }
     }
