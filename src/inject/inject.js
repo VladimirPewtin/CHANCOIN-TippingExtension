@@ -15,21 +15,30 @@ window.onload = function() {
   }, 10);
 };
 
-function getAddressFromLocalStorage(){
-  function setCurrentChoice(result) {
-    if(result !== undefined && result.address !== undefined && result.address !== ""){
-      console.log("Address Found");
-      console.log(result.address);
-      setNameUsingAddress(result.address);
+function getAddressFromLocalStorageIfChecked(){
+
+  chrome.storage.local.get("insert",function(result){
+    if(result !== undefined && result.insert){
+      //get the address from the storage
+      chrome.storage.local.get("address",function(result){
+        if(result !== undefined && result.address !== undefined && result.address !== ""){
+          console.log("Address Found");
+          console.log(result.address);
+          setNameUsingAddress(result.address);
+        }
+        else{
+          console.log("No Address Found");
+          return null;
+        }
+      });
     }
     else{
-      console.log("No Address Found");
+      console.log("No settings Found");
       return null;
     }
-    //console.log(result);
-  }
+  });
 
-  chrome.storage.local.get("address",setCurrentChoice);
+
 }
 
 /**
@@ -290,7 +299,7 @@ function checkForCSS_Class (node, className) {
           break;
         case "reply-to-thread":
           // adding the wallet address to the name field with 4chanX
-          getAddressFromLocalStorage();
+          getAddressFromLocalStorageIfChecked();
           break;
       }
     }
