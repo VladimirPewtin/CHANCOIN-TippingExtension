@@ -14,9 +14,6 @@
     "default_icon": "icons/icon32.png",
     "default_popup": "html/modal.html"
   },
-  "options_ui": {
-    "page": "html/modal.html"
-  },
   "permissions": [
     "https://boards.4chan.org/*",
     "http://boards.4chan.org/*",

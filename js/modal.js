@@ -28,16 +28,19 @@ function getAddressFromWallet(){
         selectPreviousAddress();
       }
       else{
-        console.log("nooo");
+        swal("Error!", "Error getting addresses from wallet. Is your wallet setup and running?", "error");
       }
-      //return response.result[0].address;
   	},
   	error: function(xhr, textStatus, errorThrown) {
-  		console.log("Error getting address from wallet. Is your wallet on and setup?");
+      swal("Error!", "Error getting addresses from wallet. Is your wallet setup and running?", "error");
   	}
   });
 }
 
+/**
+ * Adds the array of addresses to the selection box
+ * @param {array} optionsArray array of addresses returned from the wallet
+ */
 function addOptionsToSelect(optionsArray){
   select = document.getElementById('sel1');
 
@@ -46,6 +49,11 @@ function addOptionsToSelect(optionsArray){
   }
 }
 
+/**
+ * Adds a new option to the passed in selection box element
+ * @param {Element} selectElement selection box to add option to
+ * @param {string} newOption new option to add
+ */
 function addOptionToSelect(selectElement, newOption){
   var opt = document.createElement('option');
   opt.value = newOption;
@@ -53,6 +61,9 @@ function addOptionToSelect(selectElement, newOption){
   select.appendChild(opt);
 }
 
+/**
+ * Selects the previously used address on the selection box
+ */
 function selectPreviousAddress(){
   function setCurrentChoice(result) {
     if(result !== undefined && result.address !== undefined && result.address !== ""){
@@ -67,6 +78,9 @@ function selectPreviousAddress(){
   chrome.storage.local.get("address",setCurrentChoice);
 }
 
+/**
+ * Restores the checkbox state
+ */
 function restoreSettings(){
   function setCurrentChoice(result) {
     if(result !== undefined && result.insert !== undefined && result.insert !== ""){
@@ -82,7 +96,6 @@ function restoreSettings(){
 }
 
 /**
- * TODO: Finish function
  * Generates and gets a new address from the users wallet.
  * @return {string} new wallet address
  */
@@ -94,13 +107,11 @@ function generateNewAddress(){
     dataType: "json",
     contentType: "application/json-rpc;",
     success: function(response) {
-      //use a timeout so the loader has a chance to fire
-      console.log(response);
       select = document.getElementById('sel1');
       addOptionToSelect(select, response.result);
     },
     error: function(xhr, textStatus, errorThrown) {
-      console.log(xhr);
+      swal("Error!", "Could not create a new address", "error");
     }
   });
 }
